@@ -1,0 +1,26 @@
+name: Build with Dotnet SDK
+on: 
+  push:
+    branches: [ "build" ]
+jobs:
+  build-DPAPIBlobReader:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+    - name: Restore dependencies
+      run: dotnet restore DPAPIBlobReader/DPAPIBlobReader.csproj
+    - name: Build
+      run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishTrimmed=true -o ./bin/ --no-restore DPAPIBlobReader/DPAPIBlobReader.csproj
+
+    - name: Uploading
+      uses: actions/upload-artifact@v4
+      with:
+        name: DPAPIBlobReader.exe
+        path: bin/DPAPIBlobReader.exe
+        if-no-files-found: error
+        retention-days: 90
+
