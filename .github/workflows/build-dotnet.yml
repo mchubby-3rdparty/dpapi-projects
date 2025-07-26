@@ -22,5 +22,25 @@ jobs:
         name: DPAPIBlobReader.exe
         path: bin/DPAPIBlobReader.exe
         if-no-files-found: error
-        retention-days: 90
+        retention-days: 3
 
+  build-DPAPIMasterKeyReader:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+    - name: Restore dependencies
+      run: dotnet restore -r win-x64 DPAPIMasterKeyReader/DPAPIMasterKeyReader.csproj
+    - name: Build
+      run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishTrimmed=true -o ./bin/ --no-restore DPAPIMasterKeyReader/DPAPIMasterKeyReader.csproj
+
+    - name: Uploading
+      uses: actions/upload-artifact@v4
+      with:
+        name: DPAPIMasterKeyReader.exe
+        path: bin/DPAPIMasterKeyReader.exe
+        if-no-files-found: error
+        retention-days: 3
